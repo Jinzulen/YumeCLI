@@ -72,7 +72,18 @@ module.exports = new class Yume
                         i++
 
                         if App.language
-                            
+                            Chapter[0].some (Value) ->
+                                if Value.lang_code == App.language
+                                    chapterList.push [
+                                        Chapter[0][0],
+                                        Chapter[0][i].chapter,
+                                        Chapter[0][i].volume,
+                                        Chapter[0][i].title,
+                                        Chapter[0][i].group_id,
+                                        Chapter[0][i].group_name,
+                                        Moment.unix(Chapter[0][i].timestamp).format("DD/MM/YYYY")
+                                    ]
+
                         else
                             chapterList.push [
                                 Chapter[0][0],
