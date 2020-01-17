@@ -1,0 +1,6 @@
+*.js
+lib/
+*.map
+.npmignore
+node_modules/
+package-lock.json

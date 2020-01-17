@@ -1,0 +1,24 @@
+{
+  "name": "yumec",
+  "version": "1.0.0",
+  "description": "Convenient CLI download solution for Mangadex.",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "coffee --compile --output lib/ src/",
+    "start": "coffee --compile --output lib/ src/ && node lib/index"
+  },
+  "keywords": [
+    "manga",
+    "mangadex",
+    "download"
+  ],
+  "author": "Jinzulen",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^4.1.0",
+    "console.table": "^0.10.0",
+    "jszip": "^3.2.2",
+    "moment": "^2.24.0",
+    "request": "^2.88.0"
+  }
+}
