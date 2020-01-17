@@ -2,7 +2,7 @@
 
 ###
 # @author Jinzulen
-# @license MIT License
+# @license Apache-2.0 License
 # @copyright Copyright (C) 2020 Jinzulen
 ###
 
@@ -28,12 +28,21 @@ module.exports = new class Yume
         App = new Commander.Command
 
         App
+        .option "-a, --about", "About dialog."
         .option "-m, --manga <id>", "Show the chapter list for a given manga."
         .option "-z, --zip", "(Optional) Zips the downloaded chapter in an archive."
         .option "-c, --chapter <id>", "The ID for the chapter you wish to download."
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
         .parse process.argv
 
+        # About dialog.
+        if App.about
+            console.log "# Yume - Convenient CLI solution for manga downloads."
+            console.log "# Published under the <Apache 2.0> license by Jinzulen (https://github.com/Jinzulen).\n"
+            console.log "# Bug reports/feature requests: https://github.com/Jinzulen/Yume-Console/issues"
+            console.log "# P.S: Don't be a douche, use this tool with care and don't abuse the kindness of Mangadex."
+
+        # Handle manga/listing requests.
         if App.manga then this.handleManga App
 
         # If the user has selected a chapter for download, we want a different process to handle it.
