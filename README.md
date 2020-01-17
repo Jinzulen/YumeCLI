@@ -2,6 +2,8 @@
 Convenient CLI solution for manga downloads.
 **Please read:** Don't be a douche. Use this tool with care.
 
+**HOW TO INSTALL:** `npm i yumec -g`
+
 ### 1. Available Commands
 | # | Name | Argument | Description | Optional | Parent Command
 --- | --- | --- | --- | --- | ---
