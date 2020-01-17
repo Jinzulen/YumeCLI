@@ -114,9 +114,11 @@ module.exports = new class Yume
                 if Error
                     throw Error
 
+                Title = (Data.title).replace(/[/:*?"<>|]/g, "")
+
                 # Define our directories.
                 YumeFolder = OS.homedir() + "/Downloads/Yume/"
-                chapterFolder = "Ch. " + Data.chapter + " - " + Data.title
+                chapterFolder = "Ch. " + Data.chapter + " - " + Title
 
                 # Check for the existence of necessary directories and create them if they don't exist.
                 if not FS.existsSync YumeFolder then FS.mkdirSync YumeFolder
