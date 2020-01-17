@@ -33,8 +33,60 @@ module.exports = new class Yume
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
         .parse process.argv
 
+        if App.manga then this.handleManga App
+
         # If the user has selected a chapter for download, we want a different process to handle it.
         if App.chapter then this.handleChapter App
+
+    handleManga: (App) ->
+        try
+            this.contactAPI "manga", App.manga, (Error, Data) ->
+                if Error
+                    throw Error
+
+                # Store data.
+                Manga = Data.manga
+                Chapters = Data.chapter
+                
+                # Get language specific chapter amounts.
+                cAmount = Object.keys(Chapters).some (Key) ->
+                    if App.language then Key.includes (App.language) else Chapters.length
+
+                # Print data.
+                console.log "### " + Manga.title
+                console.log "# Artist: " + Manga.artist
+                console.log "# Author: " + Manga.author
+                console.log "# Status: " + Mangadex.Status[Manga.status] + "\n"
+
+                console.log "# Chapters:"
+
+                # List chapters.
+                chapterList = []
+
+                for i in Object.keys Chapters
+                    Chapter = []
+                    Chapter.push [i, Chapters[i]]
+
+                    i = 0
+                    while i < Chapter.length
+                        i++
+
+                        if App.language
+                            
+                        else
+                            chapterList.push [
+                                Chapter[0][0],
+                                Chapter[0][i].chapter,
+                                Chapter[0][i].volume,
+                                Chapter[0][i].title,
+                                Chapter[0][i].group_id,
+                                Chapter[0][i].group_name,
+                                Moment.unix(Chapter[0][i].timestamp).format("DD/MM/YYYY")
+                            ]
+
+                console.table ["ID", "Ch.", "Vol.", "Title", "Group ID", "Group Name", "Date"], chapterList
+        catch E
+            throw E
 
     handleChapter: (App) ->
         try
@@ -70,6 +122,7 @@ module.exports = new class Yume
                                 .pipe FS.createWriteStream YumeFolder + chapterFolder + ".zip"
                                 .on "finish", () ->
                                     console.log "# Finished downloading: " + Page
+
                             .on "close", Callback
                             .on "error", console.error
                         else

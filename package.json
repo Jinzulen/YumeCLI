@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Convenient CLI download solution for Mangadex.",
   "main": "index.js",
+  "bin": {
+    "yume": "lib/index.js"
+  },
   "scripts": {
     "prepublish": "coffee --compile --output lib/ src/",
     "start": "coffee --compile --output lib/ src/ && node lib/index"
