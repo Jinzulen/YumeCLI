@@ -56,7 +56,22 @@ module.exports = new class Yume
                             throw Error
 
                         if App.zip
+                            Request {
+                                uri: URI,
+                                encoding: null
+                            }, (Error, Response, DataP) ->
+                                Buff = new Buffer.from DataP, "binary"
+                                Image = Buff.toString "base64"
+                                
+                                ZIP.file Page, Image, { base64: true }
 
+                                ZIP
+                                .generateNodeStream { type: "nodebuffer", streamFiles: true }
+                                .pipe FS.createWriteStream YumeFolder + chapterFolder + ".zip"
+                                .on "finish", () ->
+                                    console.log "# Finished downloading: " + Page
+                            .on "close", Callback
+                            .on "error", console.error
                         else
                             Stream = Request URI
                             .pipe FS.createWriteStream YumeFolder + chapterFolder + "/" + Page
