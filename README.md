@@ -1,5 +1,6 @@
 # Yume-Console
 Convenient CLI solution for manga downloads.
+
 **Please read:** Don't be a douche. Use this tool with care.
 
 **HOW TO INSTALL:** `npm i yumec -g`
@@ -10,7 +11,7 @@ Convenient CLI solution for manga downloads.
 1 | manga | manga_id | Lists all chapters available for a selected manga. | No | *
 2 | chapter |  chapter_id | Downloads a chapter. | No | *
 3 | zip | * | Compresses the download into a ZIP archive. | Yes | chapter
-4 | language | lang_code | manga | Yes | manga
+4 | language | lang_code | Displays chapters in a specific language. | Yes | manga
 5 | about | * | Shows about dialog. | * | *
 6 | help | * | Shows help dialog. | * | *
 
@@ -25,7 +26,7 @@ Convenient CLI solution for manga downloads.
 
 ##### 3. Download a chapter:
 - Command: `yume -c <chapter_id>`
-- FYI: Downloaded chapters are placed automatically into your system's default downloads directory, might tweak it in the future to consider a user's custom destination but for now, that's where you'll find your downloads.
+- **FYI:** Downloaded chapters are placed automatically into your system's default downloads directory, might tweak it in the future to consider a user's custom destination but for now, that's where you'll find your downloads.
 
 ![Download chapter](https://i.imgur.com/SGBe5jv.png)
 
