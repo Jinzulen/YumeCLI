@@ -33,15 +33,54 @@ module.exports = new class Yume
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
         .parse process.argv
 
-        if App.manga then this.handleManga App.manga
-        if App.chapter then this.handleChapter App.chapter
+        # If the user has selected a chapter for download, we want a different process to handle it.
+        if App.chapter then this.handleChapter App
 
-    handleManga: (mangaId) ->
-        this.contactAPI "manga", mangaId, (Error, Data) ->
-            if Error
-                throw Error
+    handleChapter: (App) ->
+        try
+            this.contactAPI "chapter", App.chapter, (Error, Data) ->
+                if Error
+                    throw Error
 
-            console.log Data
+                # Define our directories.
+                YumeFolder = OS.homedir() + "/Downloads/Yume/"
+                chapterFolder = "Ch. " + Data.chapter + " - " + Data.title
+
+                # Check for the existence of necessary directories and create them if they don't exist.
+                if not FS.existsSync YumeFolder then FS.mkdirSync YumeFolder
+                if not App.zip and not FS.existsSync YumeFolder + chapterFolder then FS.mkdirSync YumeFolder + chapterFolder
+
+                Download = (URI, Page, Callback) ->
+                    Request.head URI, (Error, Response, Body) ->
+                        if Error
+                            throw Error
+
+                        if App.zip
+
+                        else
+                            Stream = Request URI
+                            .pipe FS.createWriteStream YumeFolder + chapterFolder + "/" + Page
+                            .on "close", Callback
+                            .on "error", console.error
+
+                            Stream.on "finish", () ->
+                                console.log "# Finished downloading: " + Page
+
+                                # Delete "undefined" file.
+                                # TO-DO: Look more into this bug.
+                                if FS.existsSync YumeFolder + chapterFolder + "/undefined" then FS.unlinkSync YumeFolder + chapterFolder + "/undefined"
+
+                # Initiate download.
+                chapterPages = Data.page_array;
+
+                i = -1
+                while i < chapterPages.length
+                    i++
+
+                    Download Data.server + Data.hash + "/" + chapterPages[i], chapterPages[i], () ->
+                        # Nothing.
+        catch E
+            throw E
 
     contactAPI: (subjectType, subjectId, Callback) ->
         try
