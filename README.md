@@ -25,6 +25,7 @@ Convenient CLI solution for manga downloads.
 
 ##### 3. Download a chapter:
 - Command: `yume -c <chapter_id>`
+- FYI: Downloaded chapters are placed automatically into your system's default downloads directory, might tweak it in the future to consider a user's custom destination but for now, that's where you'll find your downloads.
 
 ![Download chapter](https://i.imgur.com/SGBe5jv.png)
 
