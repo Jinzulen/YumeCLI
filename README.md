@@ -6,7 +6,7 @@ Convenient CLI solution for manga downloads.
 | # | Name | Argument | Description | Optional | Parent Command
 --- | --- | --- | --- | --- | ---
 1 | manga | manga_id | Lists all chapters available for a selected manga. | No | *
-2 | chapter |  chapter_id | Downloads a chapter. | No | No | *
+2 | chapter |  chapter_id | Downloads a chapter. | No | *
 3 | zip | * | Compresses the download into a ZIP archive. | Yes | chapter
 4 | language | lang_code | manga | Yes | manga
 5 | about | * | Shows about dialog. | * | *
@@ -23,6 +23,7 @@ Convenient CLI solution for manga downloads.
 
 ##### 3. Download a chapter:
 - Command: `yume -c <chapter_id>`
+
 ![Download chapter](https://i.imgur.com/SGBe5jv.png)
 
 ##### 4. Download compressed chapter:
