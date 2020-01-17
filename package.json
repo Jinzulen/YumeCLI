@@ -7,7 +7,6 @@
     "yume": "lib/index.js"
   },
   "scripts": {
-    "prepublish": "coffee --compile --output lib/ src/",
     "start": "coffee --compile --output lib/ src/ && node lib/index"
   },
   "keywords": [
@@ -24,5 +23,9 @@
     "moment": "^2.24.0",
     "request": "^2.88.0",
     "underscore": "^1.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jinzulen/Yume-Console.git"
   }
 }
