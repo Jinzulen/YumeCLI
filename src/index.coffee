@@ -13,6 +13,7 @@ JSZip        = require "jszip"
 Moment       = require "moment"
 Request      = require "request"
 Commander    = require "commander"
+Underscore   = require "underscore"
 consoleTable = require "console.table"
 
 # Initialize JSZip.
@@ -49,8 +50,7 @@ module.exports = new class Yume
                 Chapters = Data.chapter
                 
                 # Get language specific chapter amounts.
-                cAmount = Object.keys(Chapters).some (Key) ->
-                    if App.language then Key.includes (App.language) else Chapters.length
+                cAmount = if App.language then Underscore.where(Chapters, {lang_code: App.language}).length else Object.keys(Chapters).length
 
                 # Print data.
                 console.log "### " + Manga.title
@@ -58,7 +58,7 @@ module.exports = new class Yume
                 console.log "# Author: " + Manga.author
                 console.log "# Status: " + Mangadex.Status[Manga.status] + "\n"
 
-                console.log "# Chapters:"
+                console.log "# Chapters (" + cAmount + "):"
 
                 # List chapters.
                 chapterList = []
