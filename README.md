@@ -12,8 +12,9 @@ Convenient CLI solution for manga downloads.
 2 | chapter |  chapter_id | Downloads a chapter. | No | *
 3 | zip | * | Compresses the download into a ZIP archive. | Yes | chapter
 4 | language | lang_code | Displays chapters in a specific language. | Yes | manga
-5 | about | * | Shows about dialog. | * | *
-6 | help | * | Shows help dialog. | * | *
+5 | order | desc | Chapter display by default is in ascending order, this makes it descending. | Yes | manga
+6 | about | * | Shows about dialog. | * | *
+7 | help | * | Shows help dialog. | * | *
 
 ### 2. How to use
 ##### 1. List manga chapters:
@@ -23,6 +24,10 @@ Convenient CLI solution for manga downloads.
 ##### 2. List manga chapters matching a specific language:
 - Command: `yume -m <manga_id> -l <lang_code>`
 ![Much more specific search result.](https://i.imgur.com/4hPmiQh.png)
+
+###### 2. A List manga chapters in descending order:
+- Command: `yume -m <manga_id> -o desc`
+![Descending order display.](https://i.imgur.com/LguvH80.png)
 
 ##### 3. Download a chapter:
 - Command: `yume -c <chapter_id>`

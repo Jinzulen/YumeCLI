@@ -33,6 +33,7 @@ module.exports = new class Yume
         .option "-m, --manga <id>", "Show the chapter list for a given manga."
         .option "-z, --zip", "(Optional) Zips the downloaded chapter in an archive."
         .option "-c, --chapter <id>", "The ID for the chapter you wish to download."
+        .option "-o, --order <type>", "Sort out chapter display either in ascending or descending."
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
         .parse process.argv
 
@@ -76,7 +77,11 @@ module.exports = new class Yume
                 # List chapters.
                 chapterList = []
 
+                # Sort chapters in descending order to make it easier to find the latest release; if the user wants to.
+                if App.order == "desc" then Chapters = (Underscore.sortBy Chapters, Chapters.chapter).reverse()
+                
                 for i in Object.keys Chapters
+
                     Chapter = []
                     Chapter.push [i, Chapters[i]]
 
