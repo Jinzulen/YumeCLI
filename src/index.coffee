@@ -9,6 +9,7 @@
 # Core dependencies.
 OS           = require "os"
 FS           = require "fs"
+Path         = require "path"
 JSZip        = require "jszip"
 Moment       = require "moment"
 Request      = require "request"
@@ -34,6 +35,9 @@ module.exports = new class Yume
         .option "-c, --chapter <id>", "The ID for the chapter you wish to download."
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
         .parse process.argv
+
+        # Check for a new version of the app.
+        this.isUpdateAvailable()
 
         # About dialog.
         if App.about
@@ -114,11 +118,11 @@ module.exports = new class Yume
                 if Error
                     throw Error
 
-                Title = (Data.title).replace(/[/:*?"<>|]/g, "")
+                Title = (Data.title).replace(/[/:*?"<>|.]/g, "")
 
                 # Define our directories.
                 YumeFolder = OS.homedir() + "/Downloads/Yume/"
-                chapterFolder = "Ch. " + Data.chapter + " - " + Title
+                chapterFolder = "Ch " + Data.chapter + " - " + Title
 
                 # Check for the existence of necessary directories and create them if they don't exist.
                 if not FS.existsSync YumeFolder then FS.mkdirSync YumeFolder
@@ -184,6 +188,26 @@ module.exports = new class Yume
                             if Error
                                 throw Error
 
-                            Callback null, Data.body
+                            if Data.body.status != "OK"
+                                if subjectType == "manga" then return Callback "# [Error] " + Data.body.status
+                                if subjectType == "chapter" then return Callback "# [Error] " + Data.body.message
+                            else
+                                Callback null, Data.body
+        catch E
+            throw E
+
+    isUpdateAvailable: () ->
+        try
+            Package = [
+                "https://raw.githubusercontent.com/Jinzulen/Yume-Console/master/package.json",
+                require(Path.join(__dirname, "../package.json"))["version"]
+            ]
+
+            return Request Package[0], (Error, Data) ->
+                Version = JSON.parse(Data.body).version
+
+                if Package[1] < Version
+                    console.log "# You are running an oudated version of Yume-Console (v" + Package[1] + "), please update to v" + Version + " as soon as possible."
+                    process.exit 1
         catch E
             throw E
