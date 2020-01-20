@@ -20,6 +20,7 @@ Convenient CLI solution for manga downloads.
 ##### 1. List manga chapters:
 - Command: `yume -m <manga_id>`
 ![Search result.](https://i.imgur.com/OI4PenC.png)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FJinzulen%2FYume-Console.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FJinzulen%2FYume-Console?ref=badge_shield)
 
 ##### 2. List manga chapters matching a specific language:
 - Command: `yume -m <manga_id> -l <lang_code>`
@@ -45,3 +46,6 @@ Convenient CLI solution for manga downloads.
 # 4. Contributors
 * Jinzulen (Find me on Discord @ Jin#8303)
 * Modder4869 - Ideas and helping me out with a few puzzling things every now and then.
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FJinzulen%2FYume-Console.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FJinzulen%2FYume-Console?ref=badge_large)
