@@ -2,7 +2,7 @@
 
 ###
 # @author Jinzulen
-# @license Apache-2.0 License
+# @license MIT License
 # @copyright Copyright (C) 2020 Jinzulen
 ###
 
@@ -49,7 +49,7 @@ module.exports = new class Yume
         # About dialog.
         if App.about
             console.log "# Yume - Convenient CLI solution for manga downloads."
-            console.log "# Published under the <Apache 2.0> license by Jinzulen (https://github.com/Jinzulen).\n"
+            console.log "# Published under the <MIT> license by Jinzulen (https://github.com/Jinzulen).\n"
             console.log "# Bug reports/feature requests: https://github.com/Jinzulen/Yume-Console/issues"
             console.log "# P.S: Don't be a douche, use this tool with care and don't abuse the kindness of Mangadex."
 
@@ -225,6 +225,7 @@ module.exports = new class Yume
 
                 if Package[1] < Version
                     console.log "# You are running an oudated version of Yume-Console (v" + Package[1] + "), please update to v" + Version + " as soon as possible."
+                    console.log "# You can update Yume-Console by using its install command: npm i yumec -g"
                     process.exit 1
         catch E
             throw E

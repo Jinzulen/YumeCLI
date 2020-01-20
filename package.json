@@ -1,6 +1,6 @@
 {
   "name": "yumec",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Convenient CLI download solution for Mangadex.",
   "main": "index.js",
   "bin": {
@@ -15,7 +15,7 @@
     "download"
   ],
   "author": "Jinzulen",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "dependencies": {
     "commander": "^4.1.0",
     "console.table": "^0.10.0",
