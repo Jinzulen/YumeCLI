@@ -23,18 +23,24 @@ ZIP = new JSZip
 # Mangadex.
 Gateway = "https://mangadex.org/api"
 Mangadex = require "../mangadex.json"
+YumeVersion = require(Path.join(__dirname, "../package.json"))["version"]
 
 module.exports = new class Yume
     constructor: () ->
         App = new Commander.Command
 
+        ## --version
+        App.version YumeVersion
+
         App
         .option "-a, --about", "About dialog."
+        .option "-g, --group <name>", "Sort out chapter display by group."
         .option "-m, --manga <id>", "Show the chapter list for a given manga."
         .option "-z, --zip", "(Optional) Zips the downloaded chapter in an archive."
         .option "-c, --chapter <id>", "The ID for the chapter you wish to download."
         .option "-o, --order <type>", "Sort out chapter display either in ascending or descending."
         .option "-l, --language <code>", "(Optional) Limit chapter display to ones of a specific language."
+        .option "-s, --show", "(Optional) Will show the image link in the 'Finished downloading' notice."
         .parse process.argv
 
         # Check for a new version of the app.
@@ -63,8 +69,10 @@ module.exports = new class Yume
                 Manga = Data.manga
                 Chapters = Data.chapter
                 
-                # Get language specific chapter amounts.
-                cAmount = if App.language then Underscore.where(Chapters, {lang_code: App.language}).length else Object.keys(Chapters).length
+                # Get language and group specific chapter amounts.
+                cAmount = Object.keys(Chapters).length
+                if App.language and not App.group then cAmount = Underscore.where(Chapters, {lang_code: App.language}).length
+                if App.group and not App.language then cAmount = Underscore.where(Chapters, {group_name: (App.group).toLowerCase().split(" ").map((S) -> S.charAt(0).toUpperCase() + S.substring(1)).join(" ")}).length
 
                 # Print data.
                 console.log "### " + Manga.title
@@ -76,44 +84,40 @@ module.exports = new class Yume
 
                 # List chapters.
                 chapterList = []
+                Chaps = Object.keys Chapters
 
-                # Sort chapters in descending order to make it easier to find the latest release; if the user wants to.
-                if App.order == "desc" then Chapters = (Underscore.sortBy Chapters, Chapters.chapter).reverse()
-                
-                for i in Object.keys Chapters
+                # Why not just include this in the data object to begin with? istg...
+                for i in Chaps then Chapters[i]["chapter_id"] = i
+                    
+                # If a group is specified then search the data for matches.
+                if App.order == "desc" then Chapters = (Underscore.sortBy Chapters, Chapters.chapter).reverse() else Chapters = Underscore.sortBy Chapters, Chapters.chapter
 
-                    Chapter = []
-                    Chapter.push [i, Chapters[i]]
+                # If a group is specified then search the data for matches.
+                if App.language then Chapters = Underscore.where(Chapters, {
+                    lang_code: App.language
+                })
 
-                    i = 0
-                    while i < Chapter.length
-                        i++
+                # If a group is specified then search the data for matches.
+                if App.group then Chapters = Underscore.where(Chapters, {
+                    group_name: (App.group).toLowerCase().split(" ").map((S) -> S.charAt(0).toUpperCase() + S.substring(1)).join(" ")
+                })
 
-                        if App.language
-                            Chapter[0].some (Value) ->
-                                if Value.lang_code == App.language
-                                    chapterList.push [
-                                        Chapter[0][0],
-                                        Chapter[0][i].chapter,
-                                        Chapter[0][i].volume,
-                                        Chapter[0][i].title,
-                                        Chapter[0][i].group_id,
-                                        Chapter[0][i].group_name,
-                                        Moment.unix(Chapter[0][i].timestamp).format("DD/MM/YYYY")
-                                    ]
+                i = 0
+                while i < Object.keys(Chapters).length
+                    # Fill-up the table.
+                    chapterList.push [
+                        Chapters[i].chapter_id,
+                        Mangadex.Language[Chapters[i].lang_code],
+                        Chapters[i].chapter,
+                        Chapters[i].volume,
+                        Chapters[i].title,
+                        Chapters[i].group_name,
+                        Moment.unix(Chapters[i].timestamp).format("DD/MM/YYYY")
+                    ]
 
-                        else
-                            chapterList.push [
-                                Chapter[0][0],
-                                Chapter[0][i].chapter,
-                                Chapter[0][i].volume,
-                                Chapter[0][i].title,
-                                Chapter[0][i].group_id,
-                                Chapter[0][i].group_name,
-                                Moment.unix(Chapter[0][i].timestamp).format("DD/MM/YYYY")
-                            ]
-
-                console.table ["ID", "Ch.", "Vol.", "Title", "Group ID", "Group Name", "Date"], chapterList
+                    i++
+                    
+                console.table ["ID", "Lang", "Ch.", "Vol.", "Title", "Group Name", "Date"], chapterList
         catch E
             throw E
 
@@ -123,11 +127,19 @@ module.exports = new class Yume
                 if Error
                     throw Error
 
+                # Get around Windows' folder naming issues.
                 Title = (Data.title).replace(/[/:*?"<>|.]/g, "")
 
                 # Define our directories.
                 YumeFolder = OS.homedir() + "/Downloads/Yume/"
-                chapterFolder = "Ch " + Data.chapter + " - " + Title
+
+                # Chapter naming conditionals.
+                if Data.chapter and Data.title then Stat = "Ch " + Data.chapter + " - " + Title
+                if Data.chapter and not Data.title then Stat = "Ch " + Data.chapter
+                if Data.title and not Data.chapter then Stat = Data.title
+                if not Data.title and not Data.chapter then Stat = Data.id
+
+                chapterFolder = Stat
 
                 # Check for the existence of necessary directories and create them if they don't exist.
                 if not FS.existsSync YumeFolder then FS.mkdirSync YumeFolder
@@ -137,7 +149,7 @@ module.exports = new class Yume
                     Request.head URI, (Error, Response, Body) ->
                         if Error
                             throw Error
-
+                        
                         if App.zip
                             Request {
                                 uri: URI,
@@ -152,7 +164,10 @@ module.exports = new class Yume
                                 .generateNodeStream { type: "nodebuffer", streamFiles: true }
                                 .pipe FS.createWriteStream YumeFolder + chapterFolder + ".zip"
                                 .on "finish", () ->
-                                    console.log "# Finished downloading: " + Page
+                                    if App.show
+                                        console.log "# [" + Data.id + "] Finished downloading: " + Page + " @ " + URI
+                                    else
+                                        console.log "# [" + Data.id + "] Finished downloading: " + Page
 
                             .on "close", Callback
                             .on "error", console.error
@@ -163,21 +178,21 @@ module.exports = new class Yume
                             .on "error", console.error
 
                             Stream.on "finish", () ->
-                                console.log "# Finished downloading: " + Page
-
-                                # Delete "undefined" file.
-                                # TO-DO: Look more into this bug.
-                                if FS.existsSync YumeFolder + chapterFolder + "/undefined" then FS.unlinkSync YumeFolder + chapterFolder + "/undefined"
+                                if App.show
+                                    console.log "# [" + Data.id + "] Finished downloading: " + Page + " @ " + URI
+                                else
+                                    console.log "# [" + Data.id + "] Finished downloading: " + Page
 
                 # Initiate download.
                 chapterPages = Data.page_array;
 
-                i = -1
+                i = 0
                 while i < chapterPages.length
-                    i++
 
                     Download Data.server + Data.hash + "/" + chapterPages[i], chapterPages[i], () ->
                         # Nothing.
+
+                    i++
         catch E
             throw E
 
@@ -194,8 +209,8 @@ module.exports = new class Yume
                                 throw Error
 
                             if Data.body.status != "OK"
-                                if subjectType == "manga" then return Callback "# [Error] " + Data.body.status
-                                if subjectType == "chapter" then return Callback "# [Error] " + Data.body.message
+                                if subjectType == "manga" then return console.log "# [Error] " + Data.body.status
+                                if subjectType == "chapter" then return console.log "# [Error] " + Data.body.message
                             else
                                 Callback null, Data.body
         catch E
@@ -203,10 +218,7 @@ module.exports = new class Yume
 
     isUpdateAvailable: () ->
         try
-            Package = [
-                "https://raw.githubusercontent.com/Jinzulen/Yume-Console/master/package.json",
-                require(Path.join(__dirname, "../package.json"))["version"]
-            ]
+            Package = ["https://raw.githubusercontent.com/Jinzulen/Yume-Console/master/package.json", YumeVersion]
 
             return Request Package[0], (Error, Data) ->
                 Version = JSON.parse(Data.body).version
